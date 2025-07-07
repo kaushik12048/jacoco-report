@@ -101,10 +101,6 @@ export async function action(): Promise<void> {
         }
         break
       default:
-        core.setFailed(
-          `The event ${github.context.eventName} is not supported.`
-        )
-        return
     }
 
     core.info(`base sha: ${base}`)
