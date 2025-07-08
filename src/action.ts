@@ -40,7 +40,6 @@ export async function action(): Promise<void> {
         )
       }
     }
-    const skipIfNoChanges = parseBooleans(core.getInput('skip-if-no-changes'))
     const passEmoji = core.getInput('pass-emoji')
     const failEmoji = core.getInput('fail-emoji')
 
