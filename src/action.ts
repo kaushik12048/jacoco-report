@@ -101,6 +101,7 @@ export async function action(): Promise<void> {
         }
         break
       default:
+        prNumber = prNumber ?? (await getPrNumberAssociatedWithCommit(client, sha));
     }
 
     core.info(`base sha: ${base}`)
