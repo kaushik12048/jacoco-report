@@ -39128,10 +39128,8 @@ async function action() {
             core.info(`project: ${(0, util_1.debug)(project)}`);
         core.setOutput('coverage-overall', project.overall ? parseFloat(project.overall.percentage.toFixed(2)) : 100);
         core.setOutput('coverage-changed-files', parseFloat(project['coverage-changed-files'].toFixed(2)));
-        const skip = project.modules.length === 0;
-        core.info(`skip: ${skip} commentType: ${commentType}`);
         core.info(`prNumber: ${prNumber}`);
-        if (!skip) {
+
             const emoji = {
                 pass: passEmoji,
                 fail: failEmoji,
@@ -39153,7 +39151,7 @@ async function action() {
                     await addWorkflowSummary(bodyFormatted);
                     break;
             }
-        }
+
     }
     catch (error) {
         if (error instanceof Error) {
