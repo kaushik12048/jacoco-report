@@ -55,9 +55,7 @@ export async function action(): Promise<void> {
     }
 
     const commentType: string = core.getInput('comment-type')
-    if (debugMode) {
-      core.info(`commentType: ${commentType}`)
-    }
+    core.info(`commentType: ${commentType}`)
     if (!isValidCommentType(commentType)) {
       core.setFailed(`'comment-type' ${commentType} is invalid`)
     }
@@ -104,8 +102,8 @@ export async function action(): Promise<void> {
         prNumber = prNumber ?? (await getPrNumberAssociatedWithCommit(client, sha));
     }
 
-    core.info(`base sha: ${base}`)
-    core.info(`head sha: ${head}`)
+    core.info(`base sha: ${base} pr number: ${prNumber}`)
+    core.info(`head sha: ${head} pr number: ${prNumber}`)
     if (debugMode) core.info(`context: ${debug(github.context)}`)
     if (debugMode) core.info(`reportPaths: ${reportPaths}`)
 
@@ -126,7 +124,7 @@ export async function action(): Promise<void> {
       parseFloat(project['coverage-changed-files'].toFixed(2))
     )
 
-    const skip = skipIfNoChanges && project.modules.length === 0
+    const skip = project.modules.length === 0
     if (debugMode) core.info(`skip: ${skip}`)
     if (debugMode) core.info(`prNumber: ${prNumber}`)
     if (!skip) {
@@ -234,14 +232,13 @@ async function addComment(
   debugMode: boolean
 ): Promise<void> {
   if (prNumber === undefined) {
-    if (debugMode) core.info('prNumber not present')
-    return
+    core.info('prNumber not present')
   }
   let commentUpdated = false
 
-  if (debugMode) core.info(`update: ${update}`)
-  if (debugMode) core.info(`title: ${title}`)
-  if (debugMode) core.info(`JaCoCo Comment: ${body}`)
+  core.info(`update: ${update}`)
+  core.info(`title: ${title}`)
+ core.info(`JaCoCo Comment: ${body}`)
   if (update && title) {
     if (debugMode) core.info('Listing all comments')
     const comments = await client.rest.issues.listComments({
@@ -265,7 +262,7 @@ async function addComment(
   }
 
   if (!commentUpdated) {
-    if (debugMode) core.info('Creating a new comment')
+   core.info('Creating a new comment')
     await client.rest.issues.createComment({
       issue_number: prNumber,
       body,
