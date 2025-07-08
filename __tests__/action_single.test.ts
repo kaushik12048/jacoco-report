@@ -656,6 +656,85 @@ describe('Single report', function () {
     })
   })
 
+  describe('Issue Comment event', function () {
+    const eventName = 'issue_comment'
+    const payload = {
+      issue: {
+        number: 45,
+        pull_request: {}, // indicates this is a PR comment
+      },
+    }
+
+    it('publish proper comment', async () => {
+      initContext(eventName, payload)
+      // Mock the PR fetch to provide base/head SHAs
+      github.getOctokit = jest.fn(() => {
+        return {
+          rest: {
+            repos: {
+              compareCommits: jest.fn(({base, head}) => {
+                if (base !== head) {
+                  return compareCommitsResponse
+                } else {
+                  return {data: {files: []}}
+                }
+              }),
+              listPullRequestsAssociatedWithCommit: jest.fn(() => {
+                return {data: []}
+              }),
+              pulls: {
+                get: jest.fn(() => ({
+                  data: {
+                    base: { sha: 'guasft7asdtf78asfd87as6df7y2u3' },
+                    head: { sha: 'aahsdflais76dfa78wrglghjkaghkj' },
+                  },
+                })),
+              },
+            },
+            issues: {
+              createComment,
+              listComments,
+              updateComment,
+            },
+          },
+        }
+      })
+      await action.action()
+      expect(createComment.mock.calls[0][0].body).toEqual(PROPER_COMMENT)
+    })
+
+    it('set overall coverage output', async () => {
+      initContext(eventName, payload)
+      core.setOutput = output
+      github.getOctokit = jest.fn(() => {
+        return {
+          rest: {
+            repos: {
+              compareCommits: jest.fn(() => compareCommitsResponse),
+              listPullRequestsAssociatedWithCommit: jest.fn(() => ({data: []})),
+              pulls: {
+                get: jest.fn(() => ({
+                  data: {
+                    base: { sha: 'guasft7asdtf78asfd87as6df7y2u3' },
+                    head: { sha: 'aahsdflais76dfa78wrglghjkaghkj' },
+                  },
+                })),
+              },
+            },
+            issues: {
+              createComment,
+              listComments,
+              updateComment,
+            },
+          },
+        }
+      })
+      await action.action()
+      const out = output.mock.calls[0]
+      expect(out).toEqual(['coverage-overall', 35.25])
+    })
+  })
+
   describe('Unsupported events', function () {
     it('Fail by throwing appropriate error', async () => {
       initContext('pr_review', {})
