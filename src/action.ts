@@ -40,6 +40,7 @@ export async function action(): Promise<void> {
         )
       }
     }
+    const skipIfNoChanges = parseBooleans(core.getInput('skip-if-no-changes'))
     const passEmoji = core.getInput('pass-emoji')
     const failEmoji = core.getInput('fail-emoji')
 
@@ -54,7 +55,9 @@ export async function action(): Promise<void> {
     }
 
     const commentType: string = core.getInput('comment-type')
-    core.info(`commentType: ${commentType}`)
+    if (debugMode) {
+      core.info(`commentType: ${commentType}`)
+    }
     if (!isValidCommentType(commentType)) {
       core.setFailed(`'comment-type' ${commentType} is invalid`)
     }
@@ -98,11 +101,14 @@ export async function action(): Promise<void> {
         }
         break
       default:
-        prNumber = prNumber ?? (await getPrNumberAssociatedWithCommit(client, sha));
+        core.setFailed(
+          `The event ${github.context.eventName} is not supported.`
+        )
+        return
     }
 
-    core.info(`base sha: ${base} pr number: ${prNumber}`)
-    core.info(`head sha: ${head} pr number: ${prNumber}`)
+    core.info(`base sha: ${base}`)
+    core.info(`head sha: ${head}`)
     if (debugMode) core.info(`context: ${debug(github.context)}`)
     if (debugMode) core.info(`reportPaths: ${reportPaths}`)
 
@@ -123,9 +129,9 @@ export async function action(): Promise<void> {
       parseFloat(project['coverage-changed-files'].toFixed(2))
     )
 
-    const skip = project.modules.length === 0
-    core.info(`skip: ${skip}`)
-    core.info(`prNumber: ${prNumber}`)
+    const skip = skipIfNoChanges && project.modules.length === 0
+    if (debugMode) core.info(`skip: ${skip}`)
+    if (debugMode) core.info(`prNumber: ${prNumber}`)
     if (!skip) {
       const emoji = {
         pass: passEmoji,
@@ -231,13 +237,14 @@ async function addComment(
   debugMode: boolean
 ): Promise<void> {
   if (prNumber === undefined) {
-    core.info('prNumber not present')
+    if (debugMode) core.info('prNumber not present')
     return
   }
   let commentUpdated = false
-  core.info(`update: ${update}`)
-  core.info(`title: ${title}`)
-  core.info(`JaCoCo Comment: ${body}`)
+
+  if (debugMode) core.info(`update: ${update}`)
+  if (debugMode) core.info(`title: ${title}`)
+  if (debugMode) core.info(`JaCoCo Comment: ${body}`)
   if (update && title) {
     if (debugMode) core.info('Listing all comments')
     const comments = await client.rest.issues.listComments({
@@ -261,7 +268,7 @@ async function addComment(
   }
 
   if (!commentUpdated) {
-   core.info('Creating a new comment')
+    if (debugMode) core.info('Creating a new comment')
     await client.rest.issues.createComment({
       issue_number: prNumber,
       body,
