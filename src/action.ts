@@ -102,7 +102,6 @@ export async function action(): Promise<void> {
         break
      case 'issue_comment':
          prNumber = prNumber ??
-                    github.context.payload.issue?.pull_request?.number ??
                     github.context.payload.issue?.number ??
                     Number(core.getInput('pr-number'));
          break;
