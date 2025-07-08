@@ -662,13 +662,12 @@ describe('Single report', function () {
     const payload = {
       issue: {
         number: 45,
-        pull_request: {}, // indicates this is a PR comment
+        pull_request: {},
       },
     }
 
     it('publish proper comment', async () => {
       initContext(eventName, payload)
-      // Mock the PR fetch to provide base/head SHAs
       github.getOctokit = jest.fn(() => {
         return {
           rest: {
@@ -702,7 +701,7 @@ describe('Single report', function () {
       })
       await action.action()
       console.log('📌 Published comment:\n', createComment.mock.calls?.[0]?.[0]?.body);
-     // expect(createComment.mock.calls[0][0].body).toEqual(PROPER_COMMENT)
+      expect(createComment.mock.calls[0][0].body).toEqual(ONLY_PROJECT_COMMENT)
     })
 
     it('set overall coverage output', async () => {
