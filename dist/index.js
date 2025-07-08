@@ -39106,13 +39106,11 @@ async function action() {
                 }
                 break;
              case 'issue_comment':
-                     prNumber = prNumber ??
-                                github.context.payload.issue?.number ??
-                                Number(core.getInput('pr-number'));
-                     break;
+                prNumber = prNumber ?? github.context.payload.issue?.number ?? Number(core.getInput('pr-number'));
+                break;
             default:
-                  core.setFailed(`The event ${github.context.eventName} is not supported`)
-                  return
+                core.setFailed(`The event ${github.context.eventName} is not supported`)
+                return
         }
         core.info(`base sha: ${base} ${prNumber}`);
         core.info(`head sha: ${head}`);
@@ -39131,9 +39129,7 @@ async function action() {
         core.setOutput('coverage-overall', project.overall ? parseFloat(project.overall.percentage.toFixed(2)) : 100);
         core.setOutput('coverage-changed-files', parseFloat(project['coverage-changed-files'].toFixed(2)));
         const skip = project.modules.length === 0;
-        if (debugMode)
-            core.info(`skip: ${skip}`);
-       
+        core.info(`skip: ${skip} commentType: ${commentType}`);
         core.info(`prNumber: ${prNumber}`);
         if (!skip) {
             const emoji = {
@@ -39207,15 +39203,12 @@ async function addComment(prNumber, update, title, body, client, debugMode) {
         return;
     }
     let commentUpdated = false;
-    if (debugMode)
-        core.info(`update: ${update}`);
-    if (debugMode)
-        core.info(`title: ${title}`);
-    if (debugMode)
-        core.info(`JaCoCo Comment: ${body}`);
+    core.info(`update: ${update}`);
+    core.info(`title: ${title}`);
+    core.info(`JaCoCo Comment: ${body}`);
     if (update && title) {
-        if (debugMode)
-            core.info('Listing all comments');
+
+        core.info('Listing all comments');
         const comments = await client.rest.issues.listComments({
             issue_number: prNumber,
             ...github.context.repo,
@@ -39233,8 +39226,8 @@ async function addComment(prNumber, update, title, body, client, debugMode) {
         }
     }
     if (!commentUpdated) {
-        if (debugMode)
-            core.info('Creating a new comment');
+
+        core.info('Creating a new comment');
         await client.rest.issues.createComment({
             issue_number: prNumber,
             body,
