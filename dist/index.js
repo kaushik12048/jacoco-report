@@ -39127,8 +39127,8 @@ async function action() {
         const skip = project.modules.length === 0;
         if (debugMode)
             core.info(`skip: ${skip}`);
-        if (debugMode)
-            core.info(`prNumber: ${prNumber}`);
+       
+        core.info(`prNumber: ${prNumber}`);
         if (!skip) {
             const emoji = {
                 pass: passEmoji,
@@ -39197,8 +39197,7 @@ async function getChangedFiles(base, head, client, debugMode) {
 }
 async function addComment(prNumber, update, title, body, client, debugMode) {
     if (prNumber === undefined) {
-        if (debugMode)
-            core.info('prNumber not present');
+        core.info('prNumber not present');
         return;
     }
     let commentUpdated = false;

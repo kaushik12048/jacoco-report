@@ -124,8 +124,8 @@ export async function action(): Promise<void> {
     )
 
     const skip = project.modules.length === 0
-    if (debugMode) core.info(`skip: ${skip}`)
-    if (debugMode) core.info(`prNumber: ${prNumber}`)
+    core.info(`skip: ${skip}`)
+    core.info(`prNumber: ${prNumber}`)
     if (!skip) {
       const emoji = {
         pass: passEmoji,
@@ -232,12 +232,12 @@ async function addComment(
 ): Promise<void> {
   if (prNumber === undefined) {
     core.info('prNumber not present')
+    return
   }
   let commentUpdated = false
-
   core.info(`update: ${update}`)
   core.info(`title: ${title}`)
- core.info(`JaCoCo Comment: ${body}`)
+  core.info(`JaCoCo Comment: ${body}`)
   if (update && title) {
     if (debugMode) core.info('Listing all comments')
     const comments = await client.rest.issues.listComments({
