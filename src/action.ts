@@ -100,6 +100,12 @@ export async function action(): Promise<void> {
             prNumber ?? (await getPrNumberAssociatedWithCommit(client, sha))
         }
         break
+     case 'issue_comment':
+         prNumber = prNumber ??
+                    github.context.payload.issue?.pull_request?.number ??
+                    github.context.payload.issue?.number ??
+                    Number(core.getInput('pr-number'));
+         break;
       default:
         core.setFailed(
           `The event ${github.context.eventName} is not supported.`
