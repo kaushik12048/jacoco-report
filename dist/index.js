@@ -39107,8 +39107,7 @@ async function action() {
                 }
                 break;
             default:
-                core.setFailed(`The event ${github.context.eventName} is not supported.`);
-                return;
+                prNumber = prNumber ?? (await getPrNumberAssociatedWithCommit(client, sha));
         }
         core.info(`base sha: ${base}`);
         core.info(`head sha: ${head}`);
