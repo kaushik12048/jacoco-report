@@ -39053,7 +39053,6 @@ async function action() {
                 core.info("'title' is not set. 'update-comment' does not work without 'title'");
             }
         }
-        const skipIfNoChanges = (0, processors_1.parseBooleans)(core.getInput('skip-if-no-changes'));
         const passEmoji = core.getInput('pass-emoji');
         const failEmoji = core.getInput('fail-emoji');
         continueOnError = (0, processors_1.parseBooleans)(core.getInput('continue-on-error'));
@@ -39109,7 +39108,7 @@ async function action() {
             default:
                 prNumber = prNumber ?? (await getPrNumberAssociatedWithCommit(client, sha));
         }
-        core.info(`base sha: ${base}`);
+        core.info(`base sha: ${base} ${prNumber}`);
         core.info(`head sha: ${head}`);
         if (debugMode)
             core.info(`context: ${(0, util_1.debug)(github.context)}`);
@@ -39125,7 +39124,7 @@ async function action() {
             core.info(`project: ${(0, util_1.debug)(project)}`);
         core.setOutput('coverage-overall', project.overall ? parseFloat(project.overall.percentage.toFixed(2)) : 100);
         core.setOutput('coverage-changed-files', parseFloat(project['coverage-changed-files'].toFixed(2)));
-        const skip = skipIfNoChanges && project.modules.length === 0;
+        const skip = project.modules.length === 0;
         if (debugMode)
             core.info(`skip: ${skip}`);
         if (debugMode)
