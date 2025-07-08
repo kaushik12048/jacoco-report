@@ -39105,8 +39105,14 @@ async function action() {
                         prNumber ?? (await getPrNumberAssociatedWithCommit(client, sha));
                 }
                 break;
+             case 'issue_comment':
+                     prNumber = prNumber ??
+                                github.context.payload.issue?.number ??
+                                Number(core.getInput('pr-number'));
+                     break;
             default:
-                prNumber = prNumber ?? (await getPrNumberAssociatedWithCommit(client, sha));
+                  core.setFailed(`The event ${github.context.eventName} is not supported`)
+                  return
         }
         core.info(`base sha: ${base} ${prNumber}`);
         core.info(`head sha: ${head}`);
