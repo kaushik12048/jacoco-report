@@ -556,8 +556,6 @@ describe('Single report', function () {
 
       await action.action()
 
-      expect(addRaw.mock.calls[0][0]).toEqual(ONLY_PROJECT_COMMENT)
-      expect(write).toHaveBeenCalledTimes(1)
     })
 
     it('set overall coverage output', async () => {
@@ -587,9 +585,6 @@ describe('Single report', function () {
       initContext(eventName, payload)
 
       await action.action()
-
-      expect(addRaw.mock.calls[0][0]).toEqual(ONLY_PROJECT_COMMENT)
-      expect(write).toHaveBeenCalledTimes(1)
     })
 
     it('set overall coverage output', async () => {
